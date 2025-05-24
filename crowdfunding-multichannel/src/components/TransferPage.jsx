@@ -43,18 +43,14 @@ const TransferPage = () => {
             }
             setLoading(true);
             setError(null);
-        
+
             const goals = selectedPrograms.map((res) => res.id);
             const donationValue = estimatedCryptoValue || "0.002554";
-        
-            // Jangan reset state di sini
-            // resetState();
-        
+            resetState();
+
             const estimatedGas = await contract.estimateGas.donate(goals, {
                 value: ethers.utils.parseEther(donationValue),
             });
-        
-            // Pastikan pakai await supaya menunggu hasil transaksi
             await onGetDonationCounter(goals, {
                 value: ethers.utils.parseEther(donationValue),
                 gasLimit: estimatedGas.mul(2),
@@ -73,7 +69,6 @@ const TransferPage = () => {
     
         if (contractState.status === "Exception" || contractState.status === "Fail") {
             console.error("TX error", contractState.errorMessage);
-            resetState();
         }
     
         if (contractState.status === "Success" && contractState.receipt) {
@@ -151,8 +146,6 @@ const TransferPage = () => {
     };
 
     const estimatedCryptoValue = useMemo(() => {
-        console.log('price', price);
-        console.log('amount', amount);
         if (!price || !amount) return "0.00";
         return (parseFloat(amount.replace(/,/g, "")) / price).toFixed(6);
     }, [amount, price]);
