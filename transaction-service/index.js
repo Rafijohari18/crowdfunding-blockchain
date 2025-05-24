@@ -60,8 +60,6 @@ app.get('/getAllDonations', async (req, res) => {
       console.log('📥 Calling getAllDonations()...');
 
       const donations = await contract.getAllDonations();
-      console.log('donations', donations);
-
       // 1. Dapatkan nilai tukar ETH ke IDR
       const maticRateRes = await axios.get('https://indodax.com/api/ticker/POLIDR');
 
