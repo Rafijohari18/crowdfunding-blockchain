@@ -11,3 +11,13 @@ export const fetchTransactions = async () => {
         throw error;
     }
 };
+
+export const fetchStatistics = async () => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/api/transactions/get-statistics`);
+        return response.data ?? [];
+    } catch (error) {
+        console.error("fetchStatistics error:", error);
+        throw error;
+    }
+};

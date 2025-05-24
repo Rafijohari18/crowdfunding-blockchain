@@ -17,7 +17,7 @@ class TransactionService implements TransactionServiceInterface
             return $response->json();
         }
     
-        throw new \Exception('Gagal mengambil data dari Service Web3: ' . $response->body());
+        throw new \Exception('Failed get data from service transaction: ' . $response->body());
     }
 
     /**
@@ -25,13 +25,37 @@ class TransactionService implements TransactionServiceInterface
      */
     public function getAllStatistic()
     {
-        $response = Http::get(env('TRANSACTION_SERVICE_API', 'http://localhost:3008').'/getAllDonations');
-    
-        if ($response->successful()) {
-            return $response->json();
+        $response = Http::get(env('TRANSACTION_SERVICE_API', 'http://localhost:3008') . '/getAllDonations');
+
+        if (!$response->successful()) {
+            throw new \Exception('Failed get data from service transaction: ' . $response->body());
         }
-    
-        throw new \Exception('Gagal mengambil data dari Service Web3: ' . $response->body());
+
+        $donations = $response->json();
+
+        // Total Donors
+        $uniqueDonors = collect($donations)->pluck('donor')->unique()->count();
+
+        // Total Zis
+        $totalZis = collect($donations)->sum('amountIdr');
+
+        // Total Program (Uniq from listCampaigns)
+        $allCampaigns = collect($donations)
+            ->flatMap(function ($item) {
+                return $item['listCampaigns'] ?? [];
+            })
+            ->unique()
+            ->values()
+            ->all();
+
+        $totalPrograms = count($allCampaigns);
+
+        return [
+            'total_donors' => $uniqueDonors,
+            'total_zis' => round($totalZis, 2),
+            'total_programs' => $totalPrograms,
+            'list_programs' => $allCampaigns,
+        ];
     }
-    
+
 }
