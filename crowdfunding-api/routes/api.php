@@ -11,4 +11,5 @@ Route::get('/user', function (Request $request) {
 
 Route::prefix('transactions')->group(function () {
     Route::get('/get-all', [TransactionController::class, 'getAllTransactions']);
+    Route::get('/get-statistics', [TransactionController::class, 'getAllStatistic']);
 });
